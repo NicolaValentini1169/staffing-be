@@ -1,0 +1,37 @@
+#############################
+#  BANNER  #
+#############################
+spring.banner.location=classpath:banner.txt
+############
+#  SERVER  #
+############
+server.port=9090
+server.servlet.context-path=/staffing
+#######################
+#  URL to allow CORS  #
+#######################
+cross.origin.url=http://localhost:3000
+################################
+#  DB connection to SQLServer  #
+################################
+spring.datasource.driverClassName=com.microsoft.sqlserver.jdbc.SQLServerDriver
+spring.sql.init.platform=sqlserver
+spring.datasource.url=jdbc:sqlserver://localhost:1433;databaseName=demo
+spring.datasource.username=sa
+spring.datasource.password=Deliverone1
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.SQLServer2012Dialect
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
+#######################
+#  LOG configuration  #
+#######################
+# root level
+#logging.level.=DEBUG
+logging.file.name=log/staffing.log
+### Next three lines to log all SQL queries, including values
+#logging.level.org.hibernate.SQL=DEBUG
+#logging.level.org.hibernate.type.descriptor.sql.BasicBinder=DEBUG
+#logging.level.org.hibernate.type=DEBUG
+logging.level.org.springframework.web=INFO
+#Our classes log level
+logging.level.it.omicronconsulting.deliverone=INFO
