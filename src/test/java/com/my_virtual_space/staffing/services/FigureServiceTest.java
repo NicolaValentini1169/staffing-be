@@ -7,6 +7,8 @@ import com.my_virtual_space.staffing.security.constants.SecurityConstants;
 import com.my_virtual_space.staffing.security.entities.Role;
 import com.my_virtual_space.staffing.security.services.AuthenticationService;
 import com.my_virtual_space.staffing.security.services.RoleService;
+import com.my_virtual_space.staffing.security.services.UserService;
+import com.my_virtual_space.staffing.security.utils.AuthenticationUtils;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
@@ -18,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.math.BigDecimal;
 import java.rmi.UnexpectedException;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -38,9 +41,11 @@ class FigureServiceTest {
     private AuthenticationService authenticationService;
     @Autowired
     private RoleService roleService;
+    @Autowired
+    private UserService userService;
 
     @BeforeAll
-    void initializeAuthentication() throws UnexpectedException {
+    void initializeLoggedUser() throws UnexpectedException {
         if (roleService.findByValue(SecurityConstants.ROLE_USER_VALUE).isEmpty()) {
             roleService.save(new Role(SecurityConstants.ROLE_USER_VALUE));
         }
@@ -52,6 +57,11 @@ class FigureServiceTest {
         }
     }
 
+    @AfterAll
+    void removeLoggedUser() {
+        userService.deleteById(AuthenticationUtils.getUserId());
+    }
+
     public Stream<Arguments> getFigures() {
         Figure notSetName = new Figure();
         notSetName.setHourlyCost(hourlyCost);
@@ -59,9 +69,13 @@ class FigureServiceTest {
         Figure notSetHourlyCost = new Figure();
         notSetHourlyCost.setName(name);
 
+        Figure withId = new Figure(fakeName, hourlyCost);
+        withId.setId(UUID.randomUUID());
+
         return Stream.of(
                 Arguments.of(null, fakeName),
                 Arguments.of(new Figure(), fakeName),
+                Arguments.of(withId, fakeName),
                 Arguments.of(notSetName, fakeName),
                 Arguments.of(notSetHourlyCost, fakeName),
                 Arguments.of(new Figure(name, hourlyCost), name));
@@ -71,15 +85,20 @@ class FigureServiceTest {
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     class save {
         private void testError(Figure figure, String expected) {
+            Boolean isError = Boolean.FALSE;
             Figure result = new Figure(fakeName, hourlyCost);
 
             try {
                 result = figureService.save(figure);
             } catch (Exception e) {
-                log.debug(e.getMessage());
+                isError = Boolean.TRUE;
             }
 
             assert result.getName().equals(expected);
+
+            if (Boolean.FALSE.equals(isError)) {
+                figureService.deleteById(result.getId());
+            }
         }
 
         public Stream<Arguments> getSaveValues() {
@@ -120,7 +139,7 @@ class FigureServiceTest {
         }
 
         @MethodSource("getValues")
-        @ParameterizedTest(name = "value {0}, excepted {1}")
+        @ParameterizedTest(name = "value {0}, expected {1}")
         void byName(String value, int expected) {
             List<Figure> results = figureService.findAllByName(value);
             assert results.size() <= expected;
@@ -134,7 +153,7 @@ class FigureServiceTest {
 
         Figure notSetHourlyCost = new Figure();
         notSetHourlyCost.setId(UUID.randomUUID());
-        notSetHourlyCost.setName(name);
+        notSetHourlyCost.setName(fakeName);
 
         Figure fakeId = new Figure(name, hourlyCost);
         fakeId.setId(UUID.randomUUID());
@@ -153,23 +172,28 @@ class FigureServiceTest {
     }
 
     @MethodSource("getUpdateValues")
-    @ParameterizedTest(name = "value {0}, excepted {1}")
-    void update(Figure value, String expected) {
+    @ParameterizedTest(name = "value {0}, expected {1}")
+    void update(Figure figure, String expected) {
+        Boolean isError = Boolean.FALSE;
         Figure result = new Figure(fakeName, hourlyCost);
 
         try {
-            result = figureService.update(value);
+            result = figureService.update(figure);
         } catch (Exception e) {
-            log.debug(e.getMessage());
+            isError = Boolean.TRUE;
         }
 
         assert result.getName().equals(expected);
+
+        if (Boolean.FALSE.equals(isError)) {
+            figureService.deleteById(result.getId());
+        }
     }
 
     @Nested
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     class delete {
-        private void testError(UUID id, String excepted) {
+        private void testError(UUID id, String expected) {
             Figure result = new Figure(fakeName, hourlyCost);
 
             try {
@@ -178,7 +202,7 @@ class FigureServiceTest {
                 log.debug(e.getMessage());
             }
 
-            assert result.getName().equals(excepted);
+            assert result.getName().equals(expected);
         }
 
         private Stream<Arguments> getValues() {
@@ -186,12 +210,12 @@ class FigureServiceTest {
 
             return Stream.of(
                     Arguments.of(null, fakeName),
-                    Arguments.of(figure.getId(), name),
-                    Arguments.of(UUID.randomUUID(), fakeName));
+                    Arguments.of(UUID.randomUUID(), fakeName),
+                    Arguments.of(figure.getId(), name));
         }
 
         @MethodSource("getValues")
-        @ParameterizedTest(name = "value {0}, excepted {1}")
+        @ParameterizedTest(name = "value {0}, expected {1}")
         void byId(UUID id, String expected) {
             testError(id, expected);
         }

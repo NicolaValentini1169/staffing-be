@@ -20,7 +20,7 @@ public class FigureService {
     }
 
     private void checkFigure(Figure figure, boolean withId) {
-        if (Objects.isNull(figure) || (Boolean.TRUE.equals(withId) && Objects.isNull(figure.getId()))) {
+        if (Objects.isNull(figure) || Boolean.TRUE.equals(withId) ? Objects.isNull(figure.getId()) : Objects.nonNull(figure.getId())) {
             throw new IllegalArgumentException("Figura non valida.");
         }
 
@@ -38,7 +38,11 @@ public class FigureService {
     }
 
     public Figure save(Figure figure) {
-        checkFigure(figure, Boolean.FALSE);
+        return privateSave(figure, Boolean.FALSE);
+    }
+
+    private Figure privateSave(Figure figure, boolean withId) {
+        checkFigure(figure, withId);
 
         return figureRepository.save(figure);
     }
@@ -57,7 +61,7 @@ public class FigureService {
                 throw new IllegalArgumentException("Impossibile modificare l'importo della figura in quanto è collegata ad almeno un progetto");
             }
 
-            return save(figure);
+            return privateSave(figure, Boolean.TRUE);
         }).orElseThrow(() -> new EntityNotFoundException("Figura non trovata."));
     }
 
