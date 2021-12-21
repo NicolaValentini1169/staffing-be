@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.persistence.EntityNotFoundException;
 import java.rmi.UnexpectedException;
 
 @ControllerAdvice
@@ -61,7 +62,7 @@ public class ErrorsController extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<String> handleBadCrendential(Exception e, WebRequest request) {
+    public ResponseEntity<String> handleBadCredentials(Exception e, WebRequest request) {
 //        Viene già loggata grazie all'aspect che gira attorno al metodo nel controller, per questo qui non serve
 //        logOnlyExceptionMessage(e, request);
         return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
@@ -77,5 +78,17 @@ public class ErrorsController extends ResponseEntityExceptionHandler {
     public ResponseEntity<String> handleGenericException(Exception e, WebRequest request) {
         logExceptionStackTrace(e, request);
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<String> handleEntityNotFoundException(Exception e, WebRequest request) {
+        logExceptionStackTrace(e, request);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(Exception e, WebRequest request) {
+        logExceptionStackTrace(e, request);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
