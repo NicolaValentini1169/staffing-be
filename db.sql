@@ -11,12 +11,12 @@ CREATE TABLE users (
 	id VARCHAR(36),
 	username VARCHAR(255) NOT NULL,
 	password VARCHAR(255) NOT NULL,
-	role_id VARCHAR(36),
+	role VARCHAR(36),
 	created_by VARCHAR(36),
-	dt_ins DATETIME,
+    created_date DATETIME,
 	updated_by VARCHAR(36),
-	dt_upd DATETIME,
+    updated_date DATETIME,
 
 	PRIMARY KEY ( id ),
-	CONSTRAINT fk_user_role FOREIGN KEY ( role_id ) REFERENCES roles( id )
+	CONSTRAINT fk_user_role FOREIGN KEY ( role ) REFERENCES roles( id )
 );

@@ -25,7 +25,7 @@ public class User extends Auditable {
     private String password;
 
     @ManyToOne
-    @JoinColumn(name = "role_id", columnDefinition = "VARCHAR(36)")
+    @JoinColumn(name = "role", columnDefinition = "VARCHAR(36)")
     @Type(type = "uuid-char")
     private Role role;
 
