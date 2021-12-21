@@ -20,9 +20,9 @@ public class AuthenticationUtils {
         try {
             Authentication auth = getAuthentication();
 
-            if (auth.getDetails() instanceof JWTUserDetail) {
+            if (auth != null && auth.getDetails() instanceof JWTUserDetail) {
                 return ((JWTUserDetail) auth.getDetails());
-            } else if (auth.getPrincipal() instanceof JWTUserDetail) {
+            } else if (auth != null && auth.getPrincipal() instanceof JWTUserDetail) {
                 return ((JWTUserDetail) auth.getPrincipal());
             }
 
@@ -38,6 +38,14 @@ public class AuthenticationUtils {
 
         return loggedUser != null
                 ? loggedUser.getId()
+                : null;
+    }
+
+    public static String getUserStringId() {
+        UUID userId = getUserId();
+
+        return userId != null
+                ? userId.toString()
                 : null;
     }
 

@@ -10,7 +10,6 @@ import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
 import java.util.Date;
-import java.util.UUID;
 
 /**
  * Classe di utilità per la gestione automatica dei dati in creazione e modifica
@@ -22,49 +21,49 @@ public abstract class Auditable {
 
     @CreatedBy
     @Column(name = "created_by", columnDefinition = "VARCHAR(36)")
-    protected UUID createdBy;
+    protected String createdBy;
 
     @CreatedDate
-    @Column(name = "dt_ins")
-    protected Date dtIns;
+    @Column(name = "created_date")
+    protected Date createdDate;
 
     @LastModifiedBy
     @Column(name = "updated_by", columnDefinition = "VARCHAR(36)")
-    protected UUID updatedBy;
+    protected String updatedBy;
 
     @LastModifiedDate
-    @Column(name = "dt_upd")
-    protected Date dtUpd;
+    @Column(name = "updated_date")
+    protected Date updatedDate;
 
-    public UUID getCreatedBy() {
+    public String getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(UUID createdBy) {
+    public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
     }
 
-    public Date getDtIns() {
-        return dtIns;
+    public Date getCreatedDate() {
+        return createdDate;
     }
 
-    public void setDtIns(Date dtIns) {
-        this.dtIns = dtIns;
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
     }
 
-    public UUID getUpdatedBy() {
+    public String getUpdatedBy() {
         return updatedBy;
     }
 
-    public void setUpdatedBy(UUID updatedBy) {
+    public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
     }
 
-    public Date getDtUpd() {
-        return dtUpd;
+    public Date getUpdatedDate() {
+        return updatedDate;
     }
 
-    public void setDtUpd(Date dtUpd) {
-        this.dtUpd = dtUpd;
+    public void setUpdatedDate(Date updatedDate) {
+        this.updatedDate = updatedDate;
     }
 }
