@@ -13,11 +13,11 @@ import java.rmi.UnexpectedException;
 
 @RestController
 @RequestMapping("/api/auth")
-public class Auth {
+public class AuthApi {
 
     private final AuthenticationService authenticationService;
 
-    public Auth(AuthenticationService authenticationService) {
+    public AuthApi(AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
     }
 
