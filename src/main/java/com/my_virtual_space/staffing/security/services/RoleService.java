@@ -13,6 +13,10 @@ public class RoleService {
     @Autowired
     private RoleRepository roleRepository;
 
+    public Role save(Role role) {
+        return roleRepository.save(role);
+    }
+
     public Optional<Role> findByValue(String value) {
         return roleRepository.findByValue(value);
     }
